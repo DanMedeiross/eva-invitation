@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🐔 Aniversário da Eva!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* =============================================
+       PALETA PASTEL — baseada na identidade oficial
+       Vermelho vibrante  → #E53935  → pastel: #FFBCBC
+       Amarelo dourado    → #FFD600  → pastel: #FFF5B0
+       Preto (contornos)  → #222     → suavizado: #3a2a1a
+       Branco/creme base  → #FFFDE7  → mantido
+       Laranja accent     → #FF8A00  → pastel: #FFD9A8
+       Verde (corpo)      → #6DBE47  → pastel: #C8EDB3
+    ============================================= */
+    :root {
+      --pastel-red:    #FFBCBC;
+      --pastel-red-dk: #FF9A9A;
+      --pastel-yellow: #FFF5B0;
+      --pastel-yel-dk: #FFE066;
+      --pastel-orange: #FFD9A8;
+      --pastel-green:  #C8EDB3;
+      --pastel-green-dk:#a8d99a;
+      --pastel-blue:   #B3DEFF;
+      --pastel-pink:   #FFD6EC;
+      --cream:         #FFFDE7;
+      --outline:       #3a2a1a;
+      --text-mid:      #7a5c3a;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--pastel-yellow);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Fundo poá — marca registrada da Galinha Pintadinha */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, var(--pastel-red-dk) 5px, transparent 5px);
+      background-size: 38px 38px;
+      opacity: 0.2;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Bolhas flutuantes decorativas */
+    .bubble {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatBubble ease-in-out infinite alternate;
+      border: 2px solid rgba(58,42,26,0.1);
+    }
+    @keyframes floatBubble {
+      from { transform: translateY(0)    scale(1);    opacity:.3; }
+      to   { transform: translateY(-22px) scale(1.06); opacity:.45; }
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 16px 56px;
+      min-height: 100vh;
+    }
+
+    /* ───────── CARD ───────── */
+    .card {
+      background: var(--cream);
+      border-radius: 36px;
+      border: 4px solid var(--outline);
+      box-shadow: 7px 7px 0 var(--outline);
+      max-width: 460px;
+      width: 100%;
+      overflow: hidden;
+      animation: popIn .65s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes popIn {
+      from { opacity:0; transform:scale(.82) translateY(28px); }
+      to   { opacity:1; transform:scale(1)   translateY(0); }
+    }
+
+    /* ───────── HEADER ───────── */
+    .card-header {
+      background: var(--pastel-red);
+      border-bottom: 4px solid var(--outline);
+      padding: 26px 20px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* bolinhas no header, como a pele da galinha */
+    .card-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(58,42,26,.13) 4px, transparent 4px);
+      background-size: 22px 22px;
+      pointer-events: none;
+    }
+
+    .tag-convite {
+      display: inline-block;
+      background: var(--pastel-yellow);
+      color: var(--outline);
+      font-family: 'Fredoka One', cursive;
+      font-size: .78rem;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 4px 16px;
+      border-radius: 99px;
+      border: 2.5px solid var(--outline);
+      box-shadow: 2px 2px 0 var(--outline);
+      margin-bottom: 10px;
+    }
+
+    .hdr-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.4rem;
+      color: var(--outline);
+      display: block;
+      line-height: 1.2;
+    }
+    .hdr-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: 3.6rem;
+      color: #fff;
+      text-shadow: 3px 3px 0 var(--outline);
+      display: block;
+      line-height: 1;
+    }
+    .hdr-age {
+      display: inline-block;
+      background: var(--pastel-yellow);
+      color: var(--outline);
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.1rem;
+      padding: 5px 20px;
+      border-radius: 99px;
+      border: 3px solid var(--outline);
+      box-shadow: 3px 3px 0 var(--outline);
+      margin: 10px 0 0;
+    }
+
+    /* ── Galinhas SVG ── */
+    .chickens-row {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 6px;
+      margin-top: 16px;
+    }
+    .ch-wrap { animation: chicBob 1.7s ease-in-out infinite; }
+    .ch-wrap:nth-child(1){ animation-delay:.0s;  }
+    .ch-wrap:nth-child(2){ animation-delay:.28s; }
+    .ch-wrap:nth-child(3){ animation-delay:.55s; }
+    @keyframes chicBob {
+      0%,100%{ transform:translateY(0);   }
+      45%    { transform:translateY(-10px); }
+    }
+    .ch-wrap:nth-child(3){ animation-name: chicBobFlip; }
+    @keyframes chicBobFlip {
+      0%,100%{ transform:translateY(0)    scaleX(-1); }
+      45%    { transform:translateY(-10px) scaleX(-1); }
+    }
+    .hen-svg { width:64px; height:auto; display:block; }
+    .chick-svg{ width:46px; height:auto; display:block; }
+
+    /* ───────── BODY ───────── */
+    .card-body { padding:24px 24px 4px; }
+
+    .sec-label {
+      font-family: 'Fredoka One', cursive;
+      font-size:.72rem;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      color: var(--pastel-red-dk);
+      margin-bottom:6px;
+    }
+
+    .info-card {
+      border: 3px solid var(--outline);
+      border-radius: 20px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      box-shadow: 4px 4px 0 var(--outline);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .ic-yellow { background: var(--pastel-yellow); }
+    .ic-orange  { background: var(--pastel-orange); }
+
+    .ic-icon { font-size:1.8rem; flex-shrink:0; }
+    .ic-text {
+      font-size:1rem;
+      font-weight:800;
+      color: var(--outline);
+      line-height:1.25;
+    }
+    .ic-text small {
+      display:block;
+      font-weight:500;
+      font-size:.82rem;
+      color: var(--text-mid);
+      margin-top:2px;
+    }
+
+    .divider {
+      border:none;
+      border-top:3px dashed var(--outline);
+      opacity:.15;
+      margin:6px 0 18px;
+    }
+
+    /* ───────── BOTÕES ───────── */
+    .btn-area {
+      display:flex;
+      flex-direction:column;
+      gap:13px;
+      padding:4px 24px 28px;
+    }
+
+    .btn {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:15px 20px;
+      border-radius:18px;
+      border:3px solid var(--outline);
+      box-shadow:4px 4px 0 var(--outline);
+      font-family:'Fredoka One', cursive;
+      font-size:1.1rem;
+      cursor:pointer;
+      text-decoration:none;
+      color:var(--outline);
+      transition:transform .1s, box-shadow .1s;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .btn:hover  { transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--outline); }
+    .btn:active { transform:translate(3px,3px);   box-shadow:1px 1px 0 var(--outline); }
+
+    .btn-wpp   { background:#b8f5d0; }
+    .btn-map   { background:var(--pastel-blue); }
+    .btn-sizes { background:var(--pastel-pink); }
+    .btn-icon  { font-size:1.3rem; }
+
+    /* ───────── MODAL ───────── */
+    .modal-bg {
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(58,42,26,.45);
+      z-index:200;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      backdrop-filter:blur(4px);
+    }
+    .modal-bg.open { display:flex; }
+
+    .modal {
+      background:var(--cream);
+      border:4px solid var(--outline);
+      border-radius:32px;
+      box-shadow:8px 8px 0 var(--outline);
+      max-width:360px;
+      width:100%;
+      padding:36px 28px 28px;
+      text-align:center;
+      position:relative;
+      animation:modalPop .35s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes modalPop {
+      from{ opacity:0; transform:scale(.78); }
+      to  { opacity:1; transform:scale(1);  }
+    }
+
+    .modal-x {
+      position:absolute;
+      top:14px; right:16px;
+      background:var(--pastel-red);
+      color:var(--outline);
+      border:3px solid var(--outline);
+      border-radius:50%;
+      width:34px; height:34px;
+      font-family:'Fredoka One',cursive;
+      font-size:1rem;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:2px 2px 0 var(--outline);
+      transition:transform .1s;
+    }
+    .modal-x:active{ transform:scale(.9); }
+
+    .modal-top { font-size:3rem; display:block; margin-bottom:6px; }
+    .modal h2  {
+      font-family:'Fredoka One',cursive;
+      font-size:1.7rem;
+      color:var(--outline);
+      margin-bottom:18px;
+    }
+
+    .sizes-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+    .size-tile {
+      background:var(--pastel-yellow);
+      border:3px solid var(--outline);
+      border-radius:18px;
+      padding:20px 10px;
+      box-shadow:4px 4px 0 var(--outline);
+    }
+    .st-icon  { font-size:2.2rem; display:block; }
+    .st-label {
+      font-family:'Fredoka One',cursive;
+      font-size:.75rem;
+      text-transform:uppercase;
+      letter-spacing:1.5px;
+      color:var(--text-mid);
+      margin:4px 0 2px;
+    }
+    .st-val {
+      font-family:'Fredoka One',cursive;
+      font-size:1.6rem;
+      color:var(--outline);
+    }
+    .modal-note {
+      margin-top:16px;
+      font-size:.83rem;
+      color:var(--text-mid);
+      font-style:italic;
+    }
+
+    /* ───────── FOOTER ───────── */
+    .card-footer {
+      background:var(--pastel-red);
+      border-top:4px solid var(--outline);
+      padding:14px 16px;
+      text-align:center;
+    }
+    .card-footer p {
+      font-family:'Fredoka One',cursive;
+      font-size:1rem;
+      color:var(--outline);
+    }
+
+    /* ───────── CONFETTI ───────── */
+    .cf {
+      position:fixed;
+      pointer-events:none;
+      z-index:300;
+      opacity:0;
+      animation:cfFall linear forwards;
+    }
+    @keyframes cfFall {
+      0%  { opacity:1; transform:translateY(-10px) rotate(0deg);   }
+      100%{ opacity:0; transform:translateY(105vh)  rotate(800deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="card">
+
+    <!-- ═══════════ HEADER ═══════════ -->
+    <div class="card-header">
+      <div class="tag-convite">✨ Você está convidado(a)! ✨</div>
+
+      <span class="hdr-title">É o aniversário da</span>
+      <span class="hdr-name">Eva!</span>
+      <div class="hdr-age">🎂 1 aninho 🎂</div>
+
+      <div class="chickens-row">
+
+        <!-- Galinha vermelha (esq) -->
+        <div class="ch-wrap">
+          <svg class="hen-svg" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="30" cy="46" rx="22" ry="18" fill="#FFBCBC" stroke="#3a2a1a" stroke-width="2.5"/>
+            <circle cx="22" cy="44" r="3.5" fill="rgba(58,42,26,.15)"/>
+            <circle cx="34" cy="50" r="3"   fill="rgba(58,42,26,.15)"/>
+            <circle cx="38" cy="40" r="2.5" fill="rgba(58,42,26,.15)"/>
+            <ellipse cx="18" cy="48" rx="9" ry="6" fill="#FF9A9A" stroke="#3a2a1a" stroke-width="2"/>
+            <circle cx="44" cy="26" r="14" fill="#FFBCBC" stroke="#3a2a1a" stroke-width="2.5"/>
+            <ellipse cx="42" cy="13" rx="4.5" ry="7" fill="#FF9A9A" stroke="#3a2a1a" stroke-width="2"/>
+            <ellipse cx="50" cy="15" rx="4"   ry="6" fill="#FF9A9A" stroke="#3a2a1a" stroke-width="2"/>
+            <path d="M55 26 L62 23 L62 29 Z" fill="#FFE066" stroke="#3a2a1a" stroke-width="1.8"/>
+            <circle cx="50" cy="23" r="4"   fill="white" stroke="#3a2a1a" stroke-width="1.8"/>
+            <circle cx="51" cy="23" r="2"   fill="#3a2a1a"/>
+            <circle cx="52" cy="22" r=".8"  fill="white"/>
+            <ellipse cx="56" cy="31" rx="3" ry="4" fill="#FF9A9A" stroke="#3a2a1a" stroke-width="1.8"/>
+            <rect x="24" y="62" width="5" height="10" rx="2.5" fill="#FFE066" stroke="#3a2a1a" stroke-width="2"/>
+            <rect x="33" y="62" width="5" height="10" rx="2.5" fill="#FFE066" stroke="#3a2a1a" stroke-width="2"/>
+          </svg>
+        </div>
+
+        <!-- Pintinho amarelo (centro) -->
+        <div class="ch-wrap">
+          <svg class="chick-svg" viewBox="0 0 50 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="25" cy="40" rx="18" ry="15" fill="#FFF5B0" stroke="#3a2a1a" stroke-width="2.5"/>
+            <ellipse cx="13" cy="42" rx="7"  ry="5"  fill="#FFE066" stroke="#3a2a1a" stroke-width="2"/>
+            <circle cx="33" cy="24" r="12" fill="#FFF5B0" stroke="#3a2a1a" stroke-width="2.5"/>
+            <path d="M31 11 Q33 5 35 11" stroke="#FFE066" stroke-width="3" stroke-linecap="round"/>
+            <path d="M43 24 L49 21 L49 27 Z" fill="#FFD9A8" stroke="#3a2a1a" stroke-width="1.8"/>
+            <circle cx="38" cy="21" r="3.5" fill="white" stroke="#3a2a1a" stroke-width="1.8"/>
+            <circle cx="39" cy="21" r="1.8" fill="#3a2a1a"/>
+            <circle cx="40" cy="20" r=".6"  fill="white"/>
+            <rect x="19" y="53" width="4" height="8" rx="2" fill="#FFD9A8" stroke="#3a2a1a" stroke-width="2"/>
+            <rect x="27" y="53" width="4" height="8" rx="2" fill="#FFD9A8" stroke="#3a2a1a" stroke-width="2"/>
+          </svg>
+        </div>
+
+        <!-- Galinha verde (dir, espelhada) -->
+        <div class="ch-wrap">
+          <svg class="hen-svg" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="34" cy="46" rx="22" ry="18" fill="#C8EDB3" stroke="#3a2a1a" stroke-width="2.5"/>
+            <circle cx="28" cy="42" r="3.5" fill="rgba(58,42,26,.15)"/>
+            <circle cx="40" cy="50" r="3"   fill="rgba(58,42,26,.15)"/>
+            <circle cx="24" cy="50" r="2.5" fill="rgba(58,42,26,.15)"/>
+            <ellipse cx="46" cy="48" rx="9" ry="6" fill="#a8d99a" stroke="#3a2a1a" stroke-width="2"/>
+            <circle cx="20" cy="26" r="14" fill="#C8EDB3" stroke="#3a2a1a" stroke-width="2.5"/>
+            <ellipse cx="22" cy="13" rx="4.5" ry="7" fill="#a8d99a" stroke="#3a2a1a" stroke-width="2"/>
+            <ellipse cx="14" cy="15" rx="4"   ry="6" fill="#a8d99a" stroke="#3a2a1a" stroke-width="2"/>
+            <path d="M9 26 L2 23 L2 29 Z" fill="#FFE066" stroke="#3a2a1a" stroke-width="1.8"/>
+            <circle cx="14" cy="23" r="4"   fill="white" stroke="#3a2a1a" stroke-width="1.8"/>
+            <circle cx="15" cy="23" r="2"   fill="#3a2a1a"/>
+            <circle cx="16" cy="22" r=".8"  fill="white"/>
+            <ellipse cx="8"  cy="31" rx="3" ry="4" fill="#a8d99a" stroke="#3a2a1a" stroke-width="1.8"/>
+            <rect x="26" y="62" width="5" height="10" rx="2.5" fill="#FFE066" stroke="#3a2a1a" stroke-width="2"/>
+            <rect x="35" y="62" width="5" height="10" rx="2.5" fill="#FFE066" stroke="#3a2a1a" stroke-width="2"/>
+          </svg>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════ CORPO ═══════════ -->
+    <div class="card-body">
+
+      <p class="sec-label">📅 Quando?</p>
+      <div class="info-card ic-yellow">
+        <span class="ic-icon">🎉</span>
+        <div class="ic-text">
+          Sábado, 01 de Agosto de 2026
+          <small>às 14h — venha com bastante energia!</small>
+        </div>
+      </div>
+
+      <hr class="divider"/>
+
+      <p class="sec-label">📍 Onde?</p>
+      <div class="info-card ic-orange">
+        <span class="ic-icon">🏠</span>
+        <div class="ic-text">
+          Rua dos Macacos, 59 — Casa 09
+          <small>Unamar (Tamoios) · Cabo Frio – RJ</small>
+        </div>
+      </div>
+
+      <hr class="divider"/>
+    </div>
+
+    <!-- ═══════════ BOTÕES ═══════════ -->
+    <div class="btn-area">
+
+      <a class="btn btn-wpp"
+         href="https://wa.me/5521983078006?text=Ol%C3%A1!%20Vi%20o%20convite%20da%20Eva%20e%20confirmo%20minha%20presen%C3%A7a!%20%F0%9F%90%94%F0%9F%8E%89"
+         target="_blank" rel="noopener">
+        <span class="btn-icon">💬</span>
+        Confirmar presença no WhatsApp
+      </a>
+
+      <a class="btn btn-map" href="geo:0,0?q=Rua+dos+Macacos+59+Casa+09+Unamar+Cabo+Frio+RJ" id="btnMap">
+        <span class="btn-icon">🗺️</span>
+        Ver localização no mapa
+      </a>
+
+      <button class="btn btn-sizes" id="btnSizes">
+        <span class="btn-icon">🎁</span>
+        Tamanhos para presentear
+      </button>
+
+    </div>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <div class="card-footer">
+      <p>🐔 &nbsp;Pin pin pin, a Pintadinha manda beijo! &nbsp;🐔</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div class="modal-bg" id="modalSizes">
+  <div class="modal">
+    <button class="modal-x" id="btnClose">✕</button>
+    <span class="modal-top">🎁</span>
+    <h2>Tamanhos da Eva</h2>
+    <div class="sizes-grid">
+      <div class="size-tile">
+        <span class="st-icon">👗</span>
+        <div class="st-label">Roupa</div>
+        <div class="st-val">1 ano</div>
+      </div>
+      <div class="size-tile">
+        <span class="st-icon">👟</span>
+        <div class="st-label">Calçado</div>
+        <div class="st-val">21 – 22</div>
+      </div>
+    </div>
+    <p class="modal-note">Qualquer presentinho com amor já é especial! 💛</p>
+  </div>
+</div>
+
+<script>
+  /* ── Bolhas decorativas ── */
+  const bCols  = ['#FFBCBC','#FFF5B0','#FFD9A8','#C8EDB3','#FFD6EC','#B3DEFF'];
+  const bSizes = [40,60,30,80,50,35,70,25];
+  bCols.forEach((c,i)=>{
+    const el = document.createElement('div');
+    el.className = 'bubble';
+    el.style.cssText = `
+      width:${bSizes[i%bSizes.length]}px;
+      height:${bSizes[i%bSizes.length]}px;
+      background:${c};
+      left:${4+i*14}%;
+      top:${8+i*11}%;
+      animation-duration:${3.5+i*.7}s;
+      animation-delay:${i*.35}s;
+    `;
+    document.body.prepend(el);
+  });
+
+  /* ── Modal ── */
+  const modal    = document.getElementById('modalSizes');
+  const btnSizes = document.getElementById('btnSizes');
+  const btnClose = document.getElementById('btnClose');
+
+  btnSizes.addEventListener('click', ()=>{ modal.classList.add('open'); launchConfetti(); });
+  btnClose.addEventListener('click', ()=> modal.classList.remove('open'));
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.classList.remove('open'); });
+
+  /* ── Fallback mapa desktop ── */
+  document.getElementById('btnMap').addEventListener('click', function(e){
+    if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+      e.preventDefault();
+      window.open('https://www.google.com/maps/search/?api=1&query=Rua+dos+Macacos+59+Unamar+Cabo+Frio+RJ','_blank');
+    }
+  });
+
+  /* ── Confetti ── */
+  const cfColors = ['#FFBCBC','#FFF5B0','#FFD9A8','#C8EDB3','#FFD6EC','#B3DEFF','#FF9A9A','#FFE066'];
+  function launchConfetti(){
+    for(let i=0;i<55;i++){
+      setTimeout(()=>{
+        const el = document.createElement('div');
+        el.className = 'cf';
+        const s = 7+Math.random()*11;
+        el.style.cssText=`
+          left:${Math.random()*100}vw; top:-14px;
+          width:${s}px; height:${s}px;
+          background:${cfColors[Math.floor(Math.random()*cfColors.length)]};
+          border-radius:${Math.random()>.5?'50%':'3px'};
+          border:1.5px solid rgba(58,42,26,.18);
+          animation-duration:${2.2+Math.random()*2.5}s;
+        `;
+        document.body.appendChild(el);
+        el.addEventListener('animationend',()=>el.remove());
+      }, i*38);
+    }
+  }
+
+  window.addEventListener('load',()=>setTimeout(launchConfetti,600));
+</script>
+
+</body>
+</html>

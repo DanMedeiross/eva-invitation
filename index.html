@@ -358,7 +358,6 @@
       font-size:1rem;
       color:var(--outline);
     }
-
     .card-footer small {
       font-family:'Fredoka One',cursive;
       font-size:0.6rem;
@@ -549,6 +548,7 @@
       line-height: 1.2;
     }
     #music-label span { display: block; font-family: 'Nunito', sans-serif; font-size: .7rem; font-weight: 600; opacity: .7; }
+    #yt-frame { display: none; }
 
     /* ── Copyright ── */
     .page-copyright {
@@ -659,6 +659,8 @@
 
 
 <!-- ── Player YouTube (oculto) ── -->
+<div id="yt-frame" style="display:none;"></div>
+
 <!-- ── Barra de música ── -->
 <div id="music-bar" title="Pausar / Retomar música">
   <span id="music-icon">🎵</span>
@@ -741,7 +743,7 @@
     <div class="btn-area">
 
       <a class="btn btn-wpp"
-         href="https://wa.me/5522992311989?text=Ol%C3%A1!%20Vi%20o%20convite%20da%20Eva%20e%20confirmo%20minha%20presen%C3%A7a!%20%F0%9F%90%94%F0%9F%8E%89"
+         href="https://wa.me/5521983078006?text=Ol%C3%A1!%20Vi%20o%20convite%20da%20Eva%20e%20confirmo%20minha%20presen%C3%A7a!%20%F0%9F%90%94%F0%9F%8E%89"
          target="_blank" rel="noopener">
         <span class="btn-icon">💬</span>
         Confirmar presença no WhatsApp
@@ -857,98 +859,66 @@
   window.addEventListener('load',()=>setTimeout(launchConfetti,600));
 
   /* ══════════════════════════════════════════
-     MÚSICA — iframe injetado no primeiro clique
-     Técnica compatível com Safari/iOS:
-     o iframe é criado DENTRO do handler de clique,
-     satisfazendo o requisito de gesto do usuário.
-     autoplay=1 na URL garante play imediato.
-     Pause/resume via postMessage após o primeiro play.
+     MÚSICA — YouTube IFrame API (oficial)
+     A API injeta o player quando a página carrega.
+     O usuário precisa interagir com a página antes
+     do autoplay funcionar (política dos navegadores).
+     Clicamos no music-bar para iniciar/pausar.
   ══════════════════════════════════════════ */
-  document.addEventListener('DOMContentLoaded', function() {
-    var bar     = document.getElementById('music-bar');
-    var icon    = document.getElementById('music-icon');
-    var status  = document.getElementById('music-status');
-    var iframe  = null;
-    var playing = false;
+  var ytPlayer = null;
+  var ytPlaying = false;
 
-    function setUI(isPlaying) {
-      playing = isPlaying;
-      icon.textContent   = isPlaying ? '🎵' : '🔇';
-      status.textContent = isPlaying ? 'tocando…' : 'pausado';
-    }
+  // 1. Carrega o script da API do YouTube dinamicamente
+  (function(){
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+  })();
 
-    // Ouve eventos de estado vindos do player YT via postMessage
-    window.addEventListener('message', function(e) {
-      if (!e.data) return;
-      try {
-        var data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
-        if (data.event === 'onStateChange') {
-          if      (data.info === 1) setUI(true);   // PLAYING
-          else if (data.info === 2) setUI(false);  // PAUSED
-          else if (data.info === 0) setUI(false);  // ENDED
+  // 2. Callback chamado pela API quando estiver pronta
+  function onYouTubeIframeAPIReady() {
+    ytPlayer = new YT.Player('yt-frame', {
+      height: '0',
+      width: '0',
+      videoId: 'ei2-RjJDBHc',
+      playerVars: {
+        autoplay: 0,      // não autoplaya (bloqueado pelos browsers sem interação)
+        loop: 1,
+        playlist: 'ei2-RjJDBHc',
+        controls: 0,
+        modestbranding: 1,
+        rel: 0
+      },
+      events: {
+        onReady: function(e) {
+          // Player pronto — aguarda clique do usuário para tocar
+          document.getElementById('music-status').textContent = 'clique para tocar';
+        },
+        onStateChange: function(e) {
+          if (e.data === YT.PlayerState.PLAYING) {
+            ytPlaying = true;
+            document.getElementById('music-icon').textContent = '🎵';
+            document.getElementById('music-status').textContent = 'tocando…';
+          } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
+            ytPlaying = false;
+            document.getElementById('music-icon').textContent = '🔇';
+            document.getElementById('music-status').textContent = 'pausado';
+          }
         }
-      } catch(err) {}
-    });
-
-    bar.addEventListener('click', function() {
-
-      // ── PRIMEIRO CLIQUE ──────────────────────────────────────────
-      // O Safari bloqueia áudio de iframes com display:none ou size 0.
-      // Solução: iframe posicionado FORA da tela mas com tamanho real (1×1px),
-      // criado e inserido DENTRO deste handler de clique.
-      // Isso satisfaz simultaneamente:
-      //   1. Requisito de gesto do usuário (estamos dentro do click)
-      //   2. Requisito de elemento "renderizado" do Safari WebKit
-      if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.id    = 'yt-frame';
-        iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
-        // Posicionado fora da área visível — invisível ao usuário,
-        // mas renderizado pelo engine do Safari (não é display:none)
-        iframe.style.cssText = [
-          'position:fixed',
-          'top:-9999px',
-          'left:-9999px',
-          'width:1px',
-          'height:1px',
-          'opacity:0',
-          'pointer-events:none',
-          'border:none'
-        ].join(';');
-        iframe.src =
-          'https://www.youtube.com/embed/ei2-RjJDBHc' +
-          '?autoplay=1' +
-          '&loop=1' +
-          '&playlist=ei2-RjJDBHc' +
-          '&controls=0' +
-          '&modestbranding=1' +
-          '&rel=0' +
-          '&enablejsapi=1' +
-          '&playsinline=1' +
-          '&mute=0';
-        document.body.appendChild(iframe);
-        status.textContent = 'carregando…';
-
-        // Confirma UI assim que o iframe terminar de carregar
-        iframe.addEventListener('load', function() {
-          setUI(true);
-        });
-        return;
       }
-
-      // ── CLIQUES SEGUINTES: toggle pause/play ─────────────────────
-      var cmd = playing ? 'pauseVideo' : 'playVideo';
-      try {
-        iframe.contentWindow.postMessage(
-          JSON.stringify({ event: 'command', func: cmd, args: [] }),
-          'https://www.youtube.com'
-        );
-      } catch(err) {}
-      setUI(!playing);
     });
+  }
 
-    // Status inicial
-    status.textContent = 'clique para tocar';
+  // 3. Clique na barra inicia/pausa
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('music-bar').addEventListener('click', function() {
+      if (!ytPlayer) return;
+      if (ytPlaying) {
+        ytPlayer.pauseVideo();
+      } else {
+        ytPlayer.playVideo();
+      }
+    });
 
     /* ══════════════════════════════════════════
        EASTER EGG — 3 cliques no copyright

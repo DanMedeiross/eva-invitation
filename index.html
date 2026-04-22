@@ -359,6 +359,12 @@
       color:var(--outline);
     }
 
+    .card-footer small {
+      font-family:'Fredoka One',cursive;
+      font-size:0.6rem;
+      color:var(--outline);
+    }
+
     /* ───────── CONFETTI ───────── */
     .cf {
       position:fixed;
@@ -735,7 +741,7 @@
     <div class="btn-area">
 
       <a class="btn btn-wpp"
-         href="https://wa.me/5521983078006?text=Ol%C3%A1!%20Vi%20o%20convite%20da%20Eva%20e%20confirmo%20minha%20presen%C3%A7a!%20%F0%9F%90%94%F0%9F%8E%89"
+         href="https://wa.me/5522992311989?text=Ol%C3%A1!%20Vi%20o%20convite%20da%20Eva%20e%20confirmo%20minha%20presen%C3%A7a!%20%F0%9F%90%94%F0%9F%8E%89"
          target="_blank" rel="noopener">
         <span class="btn-icon">💬</span>
         Confirmar presença no WhatsApp
@@ -756,6 +762,7 @@
     <!-- ═══════════ FOOTER ═══════════ -->
     <div class="card-footer">
       <p>🐔 &nbsp; Esperamos por você! &nbsp;🐔</p>
+      <small>&nbsp; P.S. Convidado não convida! &nbsp;😊</small>
     </div>
 
   </div>
@@ -864,59 +871,79 @@
     var iframe  = null;
     var playing = false;
 
-    // Atualiza visual da barra
     function setUI(isPlaying) {
       playing = isPlaying;
       icon.textContent   = isPlaying ? '🎵' : '🔇';
       status.textContent = isPlaying ? 'tocando…' : 'pausado';
     }
 
-    // Ouve mensagens do player (onStateChange via postMessage)
+    // Ouve eventos de estado vindos do player YT via postMessage
     window.addEventListener('message', function(e) {
       if (!e.data) return;
       try {
         var data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
         if (data.event === 'onStateChange') {
-          if (data.info === 1)      setUI(true);   // PLAYING
+          if      (data.info === 1) setUI(true);   // PLAYING
           else if (data.info === 2) setUI(false);  // PAUSED
-          else if (data.info === 0) {              // ENDED — reinicia
-            if (iframe) iframe.src = iframe.src;
-            setUI(true);
-          }
+          else if (data.info === 0) setUI(false);  // ENDED
         }
       } catch(err) {}
     });
 
     bar.addEventListener('click', function() {
-      // Primeiro clique: cria o iframe COM autoplay=1 dentro do handler (Safari exige isso)
+
+      // ── PRIMEIRO CLIQUE ──────────────────────────────────────────
+      // O Safari bloqueia áudio de iframes com display:none ou size 0.
+      // Solução: iframe posicionado FORA da tela mas com tamanho real (1×1px),
+      // criado e inserido DENTRO deste handler de clique.
+      // Isso satisfaz simultaneamente:
+      //   1. Requisito de gesto do usuário (estamos dentro do click)
+      //   2. Requisito de elemento "renderizado" do Safari WebKit
       if (!iframe) {
         iframe = document.createElement('iframe');
-        iframe.id = 'yt-frame';
-        iframe.style.cssText = 'display:none;position:absolute;width:0;height:0;';
-        iframe.allow = 'autoplay; encrypted-media';
-        // enablejsapi=1 + origin correto para postMessage
-        // autoplay=1 DENTRO do clique = permitido pelo Safari
-        iframe.src = 'https://www.youtube.com/embed/ei2-RjJDBHc'
-          + '?autoplay=1&loop=1&playlist=ei2-RjJDBHc'
-          + '&controls=0&modestbranding=1&rel=0'
-          + '&enablejsapi=1&playsinline=1';
+        iframe.id    = 'yt-frame';
+        iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+        // Posicionado fora da área visível — invisível ao usuário,
+        // mas renderizado pelo engine do Safari (não é display:none)
+        iframe.style.cssText = [
+          'position:fixed',
+          'top:-9999px',
+          'left:-9999px',
+          'width:1px',
+          'height:1px',
+          'opacity:0',
+          'pointer-events:none',
+          'border:none'
+        ].join(';');
+        iframe.src =
+          'https://www.youtube.com/embed/ei2-RjJDBHc' +
+          '?autoplay=1' +
+          '&loop=1' +
+          '&playlist=ei2-RjJDBHc' +
+          '&controls=0' +
+          '&modestbranding=1' +
+          '&rel=0' +
+          '&enablejsapi=1' +
+          '&playsinline=1' +
+          '&mute=0';
         document.body.appendChild(iframe);
-        setUI(true);
         status.textContent = 'carregando…';
-        // Assim que o iframe carregar, confirma que está tocando
+
+        // Confirma UI assim que o iframe terminar de carregar
         iframe.addEventListener('load', function() {
           setUI(true);
         });
         return;
       }
 
-      // Cliques seguintes: toggle via postMessage
+      // ── CLIQUES SEGUINTES: toggle pause/play ─────────────────────
       var cmd = playing ? 'pauseVideo' : 'playVideo';
-      iframe.contentWindow.postMessage(
-        JSON.stringify({ event: 'command', func: cmd, args: [] }),
-        '*'
-      );
-      // Atualiza UI imediatamente (não espera o evento de resposta)
+      try {
+        iframe.contentWindow.postMessage(
+          JSON.stringify({ event: 'command', func: cmd, args: [] }),
+          'https://www.youtube.com'
+        );
+      } catch(err) {}
       setUI(!playing);
     });
 

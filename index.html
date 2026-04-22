@@ -860,7 +860,6 @@
      Clicamos no music-bar para iniciar/pausar.
   ══════════════════════════════════════════ */
   var ytPlayer = null;
-  var ytPlaying = false;
 
   // 1. Carrega o script da API do YouTube dinamicamente
   (function(){
@@ -876,7 +875,7 @@
       width: '0',
       videoId: 'ei2-RjJDBHc',
       playerVars: {
-        autoplay: 0,      // não autoplaya (bloqueado pelos browsers sem interação)
+        autoplay: 0,
         loop: 1,
         playlist: 'ei2-RjJDBHc',
         controls: 0,
@@ -885,16 +884,13 @@
       },
       events: {
         onReady: function(e) {
-          // Player pronto — aguarda clique do usuário para tocar
           document.getElementById('music-status').textContent = 'clique para tocar';
         },
         onStateChange: function(e) {
           if (e.data === YT.PlayerState.PLAYING) {
-            ytPlaying = true;
             document.getElementById('music-icon').textContent = '🎵';
             document.getElementById('music-status').textContent = 'tocando…';
           } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
-            ytPlaying = false;
             document.getElementById('music-icon').textContent = '🔇';
             document.getElementById('music-status').textContent = 'pausado';
           }
@@ -903,11 +899,14 @@
     });
   }
 
-  // 3. Clique na barra inicia/pausa
+  // 3. Clique na barra — usa getPlayerState() para checar o estado REAL no momento do clique
+  //    Isso evita o bug do Safari onde a variável ytPlaying fica dessincronizada do player
   document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('music-bar').addEventListener('click', function() {
-      if (!ytPlayer) return;
-      if (ytPlaying) {
+      if (!ytPlayer || typeof ytPlayer.getPlayerState !== 'function') return;
+      var state = ytPlayer.getPlayerState();
+      // YT.PlayerState.PLAYING === 1
+      if (state === 1) {
         ytPlayer.pauseVideo();
       } else {
         ytPlayer.playVideo();

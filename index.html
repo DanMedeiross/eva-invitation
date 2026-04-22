@@ -512,9 +512,185 @@
 
       body::before      { background-size: 80px 80px; }
     }
+
+    /* ── Player de música ── */
+    #music-bar {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 100;
+      max-width: calc(100vw - 32px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--cream);
+      border: 3px solid var(--outline);
+      border-radius: 99px;
+      box-shadow: 4px 4px 0 var(--outline);
+      padding: 8px 16px 8px 10px;
+      cursor: pointer;
+      transition: transform .1s, box-shadow .1s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #music-bar:hover  { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--outline); }
+    #music-bar:active { transform: translate(2px,2px);   box-shadow: 2px 2px 0 var(--outline); }
+    #music-icon { font-size: 1.4rem; line-height: 1; }
+    #music-label {
+      font-family: 'Fredoka One', cursive;
+      font-size: .8rem;
+      color: var(--outline);
+      line-height: 1.2;
+    }
+    #music-label span { display: block; font-family: 'Nunito', sans-serif; font-size: .7rem; font-weight: 600; opacity: .7; }
+    #yt-frame { display: none; }
+
+    /* ── Copyright ── */
+    .page-copyright {
+      text-align: center;
+      margin-top: 14px;
+      margin-bottom: 72px; /* espaço para a barra de música não sobrepor */
+      font-family: 'Nunito', sans-serif;
+      font-size: .72rem;
+      color: rgba(132,66,153,.55);
+      cursor: default;
+      user-select: none;
+      letter-spacing: .5px;
+    }
+
+    /* ── Modal do dev (easter egg) ── */
+    #modal-dev-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(132,66,153,.45);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+    #modal-dev-bg.open { display: flex; }
+    #modal-dev {
+      background: var(--cream);
+      border: 4px solid var(--outline);
+      border-radius: 32px;
+      box-shadow: 8px 8px 0 var(--outline);
+      max-width: 360px;
+      width: 100%;
+      padding: 36px 28px 28px;
+      text-align: center;
+      position: relative;
+      animation: modalPop .35s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    #modal-dev .modal-x {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: var(--pastel-red);
+      color: var(--outline);
+      border: 3px solid var(--outline);
+      border-radius: 50%;
+      width: 34px; height: 34px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 2px 2px 0 var(--outline);
+      transition: transform .1s;
+    }
+    #modal-dev .modal-x:active { transform: scale(.9); }
+    #modal-dev .modal-top  { font-size: 3rem; display: block; margin-bottom: 6px; }
+    #modal-dev h2 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.7rem;
+      color: var(--outline);
+      margin-bottom: 4px;
+    }
+    #modal-dev .dev-subtitle {
+      font-size: .8rem;
+      color: var(--text-mid);
+      margin-bottom: 18px;
+      font-style: italic;
+    }
+    .dev-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+    .dev-tile {
+      background: var(--pastel-yellow);
+      border: 3px solid var(--outline);
+      border-radius: 18px;
+      padding: 16px 10px;
+      box-shadow: 4px 4px 0 var(--outline);
+      text-decoration: none;
+      display: block;
+      transition: transform .1s, box-shadow .1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .dev-tile:hover  { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--outline); }
+    .dev-tile:active { transform: translate(2px,2px);   box-shadow: 1px 1px 0 var(--outline); }
+    .dev-tile.linkedin { background: var(--pastel-blue); }
+    .dev-tile.github   { background: var(--pastel-pink); }
+    .dev-tile.whatsapp { background: #b8f5d0; }
+    .dev-tile .dt-icon  { font-size: 1.8rem; display: block; }
+    .dev-tile .dt-label {
+      font-family: 'Fredoka One', cursive;
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-mid);
+      margin: 4px 0 2px;
+    }
+    .dev-tile .dt-val {
+      font-family: 'Fredoka One', cursive;
+      font-size: .95rem;
+      color: var(--outline);
+    }
   </style>
 </head>
 <body>
+
+
+<!-- ── Player YouTube (oculto) ── -->
+<div id="yt-frame" style="display:none;"></div>
+
+<!-- ── Barra de música ── -->
+<div id="music-bar" title="Pausar / Retomar música">
+  <span id="music-icon">🎵</span>
+  <div id="music-label">
+    Parabéns da Pintadinha
+    <span id="music-status">tocando…</span>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL DEV (easter egg) ═══════════ -->
+<div id="modal-dev-bg">
+  <div id="modal-dev">
+    <button class="modal-x" id="btnCloseDev">✕</button>
+    <span class="modal-top">👨‍💻</span>
+    <h2>Desenvolvido por</h2>
+    <p class="dev-subtitle">Um pai orgulhoso 🐔</p>
+    <div class="dev-grid">
+      <a class="dev-tile linkedin" href="https://linkedin.com/in/daniel-medeiros-58958222b" target="_blank" rel="noopener">
+        <span class="dt-icon">💼</span>
+        <div class="dt-label">LinkedIn</div>
+        <div class="dt-val">Daniel Medeiros</div>
+      </a>
+      <a class="dev-tile github" href="https://github.com/DanMedeiross" target="_blank" rel="noopener">
+        <span class="dt-icon">🐙</span>
+        <div class="dt-label">GitHub</div>
+        <div class="dt-val">DanMedeiross</div>
+      </a>
+      <a class="dev-tile whatsapp" href="https://wa.me/5521983078006" target="_blank" rel="noopener" style="grid-column:1/-1;">
+        <span class="dt-icon">💬</span>
+        <div class="dt-label">WhatsApp</div>
+        <div class="dt-val">+55 (21) 98307-8006</div>
+      </a>
+    </div>
+  </div>
+</div>
 
 <div class="page-wrap">
   <div class="card">
@@ -586,6 +762,8 @@
     </div>
 
   </div>
+
+  <p class="page-copyright" id="copyrightTrigger">Copyright © 2026 Medeiros IT. Todos os direitos reservados.</p>
 </div>
 
 <!-- ═══════════ MODAL ═══════════ -->
@@ -673,6 +851,94 @@
   }
 
   window.addEventListener('load',()=>setTimeout(launchConfetti,600));
+
+  /* ══════════════════════════════════════════
+     MÚSICA — YouTube IFrame API (oficial)
+     A API injeta o player quando a página carrega.
+     O usuário precisa interagir com a página antes
+     do autoplay funcionar (política dos navegadores).
+     Clicamos no music-bar para iniciar/pausar.
+  ══════════════════════════════════════════ */
+  var ytPlayer = null;
+  var ytPlaying = false;
+
+  // 1. Carrega o script da API do YouTube dinamicamente
+  (function(){
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+  })();
+
+  // 2. Callback chamado pela API quando estiver pronta
+  function onYouTubeIframeAPIReady() {
+    ytPlayer = new YT.Player('yt-frame', {
+      height: '0',
+      width: '0',
+      videoId: 'ei2-RjJDBHc',
+      playerVars: {
+        autoplay: 0,      // não autoplaya (bloqueado pelos browsers sem interação)
+        loop: 1,
+        playlist: 'ei2-RjJDBHc',
+        controls: 0,
+        modestbranding: 1,
+        rel: 0
+      },
+      events: {
+        onReady: function(e) {
+          // Player pronto — aguarda clique do usuário para tocar
+          document.getElementById('music-status').textContent = 'clique para tocar';
+        },
+        onStateChange: function(e) {
+          if (e.data === YT.PlayerState.PLAYING) {
+            ytPlaying = true;
+            document.getElementById('music-icon').textContent = '🎵';
+            document.getElementById('music-status').textContent = 'tocando…';
+          } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
+            ytPlaying = false;
+            document.getElementById('music-icon').textContent = '🔇';
+            document.getElementById('music-status').textContent = 'pausado';
+          }
+        }
+      }
+    });
+  }
+
+  // 3. Clique na barra inicia/pausa
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('music-bar').addEventListener('click', function() {
+      if (!ytPlayer) return;
+      if (ytPlaying) {
+        ytPlayer.pauseVideo();
+      } else {
+        ytPlayer.playVideo();
+      }
+    });
+
+    /* ══════════════════════════════════════════
+       EASTER EGG — 3 cliques no copyright
+    ══════════════════════════════════════════ */
+    var clicks = 0, eggTimer;
+    var trigger = document.getElementById('copyrightTrigger');
+    var modalBg = document.getElementById('modal-dev-bg');
+
+    trigger.addEventListener('click', function() {
+      clicks++;
+      clearTimeout(eggTimer);
+      eggTimer = setTimeout(function(){ clicks = 0; }, 900);
+      if (clicks >= 3) {
+        clicks = 0;
+        modalBg.classList.add('open');
+        launchConfetti();
+      }
+    });
+
+    document.getElementById('btnCloseDev').addEventListener('click', function() {
+      modalBg.classList.remove('open');
+    });
+    modalBg.addEventListener('click', function(e) {
+      if (e.target === modalBg) modalBg.classList.remove('open');
+    });
+  });
 </script>
 
 </body>
